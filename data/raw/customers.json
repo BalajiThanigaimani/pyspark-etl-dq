@@ -1,0 +1,5 @@
+[
+  {"txn_id": 1, "account_id": 101, "txn_type": "DEBIT", "amount_cad": 250.75, "city": "Toronto"},
+  {"txn_id": 2, "account_id": 102, "txn_type": "CREDIT", "amount_cad": 500.00, "city": "Ottawa"},
+  {"txn_id": 3, "account_id": 103, "txn_type": "DEBIT", "amount_cad": 150.25, "city": "Vancouver"}
+]
