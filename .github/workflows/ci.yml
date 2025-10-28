@@ -33,22 +33,15 @@ jobs:
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          restore-keys: ${{ runner.os }}-pip-
 
-      - name: Install deps
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install allure-pytest  # ✅ Ensure allure plugin is installed
 
       - name: Add project to PYTHONPATH
         run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
-
-      # ✅ Generate raw data for ETL
-      - name: Generate raw input data
-        run: |
-          python etl/generate_raw_data.py
 
       - name: Run Bronze ETL
         run: python etl/bronze_job.py
@@ -59,7 +52,7 @@ jobs:
       - name: Run Gold ETL
         run: python etl/gold_job.py
 
-      - name: Run pytest (produce allure-results)
+      - name: Run Tests with Allure
         run: pytest -v --alluredir=allure-results
 
       - name: Install Allure CLI
@@ -69,11 +62,10 @@ jobs:
           sudo mv allure-${ALLURE_VERSION} /opt/allure
           sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
 
-      - name: Build Allure report
-        run: |
-          allure generate --clean allure-results -o site
+      - name: Generate Allure Report
+        run: allure generate --clean allure-results -o site
 
-      - name: Upload Pages artifact
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
