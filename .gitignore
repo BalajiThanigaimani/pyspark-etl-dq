@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+.DS_Store
+spark-warehouse/
+metastore_db/
+derby.log
+.ivy2/
+logs/
+*.log
+data/
+.spark/
+*.iml
+.idea/
+*.pyc
