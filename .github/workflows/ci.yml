@@ -25,6 +25,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Run ETL jobs (Bronze, Silver, Gold)
+      run: |
+        export PYTHONPATH=.
+        python etl/bronze_job.py
+        python etl/silver_job.py
+        python etl/gold_job.py
+
     - name: Run tests
       run: |
         export PYTHONPATH=.
