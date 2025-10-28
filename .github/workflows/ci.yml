@@ -43,10 +43,7 @@ jobs:
           # pytest plugin is already in requirements, just a sanity echo:
           python -c "import pytest, allure_pytest; print('pytest + allure ready')"
 
-      # --- Create data & run ETL so Delta tables exist in CI ---
-      - name: Generate raw data
-        run: |
-          python etl/generate_raw_data.py
+      # --- Create data & run ETL so Delta tables exist in CI --
 
       - name: Run Bronze ETL
         run: |
