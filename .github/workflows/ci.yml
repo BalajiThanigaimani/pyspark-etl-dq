@@ -40,50 +40,43 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          # pytest plugin is already in requirements, just a sanity echo:
-          python -c "import pytest, allure_pytest; print('pytest + allure ready')"
+          pip install allure-pytest  # ✅ Ensure allure plugin is installed
 
-      # --- Create data & run ETL so Delta tables exist in CI --
+      - name: Add project to PYTHONPATH
+        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+
+      # ✅ Generate raw data for ETL
+      - name: Generate raw input data
+        run: |
+          python etl/generate_raw_data.py
 
       - name: Run Bronze ETL
-        run: |
-          python etl/bronze_job.py
+        run: python etl/bronze_job.py
 
       - name: Run Silver ETL
-        run: |
-          python etl/silver_job.py
+        run: python etl/silver_job.py
 
       - name: Run Gold ETL
-        run: |
-          python etl/gold_job.py
+        run: python etl/gold_job.py
 
-      # --- Run tests & collect Allure results ---
       - name: Run pytest (produce allure-results)
-        run: |
-          pytest -v --alluredir=allure-results
+        run: pytest -v --alluredir=allure-results
 
-      # --- Install Allure CLI and build the site ---
       - name: Install Allure CLI
         run: |
-          set -e
           ALLURE_VERSION=2.29.0
-          curl -sL https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz \
-            | tar -xz
+          curl -sL https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz | tar -xz
           sudo mv allure-${ALLURE_VERSION} /opt/allure
           sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
-          allure --version
 
       - name: Build Allure report
         run: |
           allure generate --clean allure-results -o site
-          echo "pyspark-etl-dq" > site/CNAME || true
 
-      # --- Publish to GitHub Pages ---
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
 
       - name: Deploy to GitHub Pages
-        id: deployment
         uses: actions/deploy-pages@v4
